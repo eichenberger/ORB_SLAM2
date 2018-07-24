@@ -36,6 +36,7 @@
 #include<iostream>
 
 #include<mutex>
+#include <unistd.h>
 
 
 using namespace std;
@@ -589,6 +590,7 @@ void Tracking::MonocularInitialization()
         // Try to initialize
         if((int)mCurrentFrame.mvKeys.size()<=100)
         {
+            cout << "mvKey < 100\n";
             delete mpInitializer;
             mpInitializer = static_cast<Initializer*>(NULL);
             fill(mvIniMatches.begin(),mvIniMatches.end(),-1);
@@ -600,8 +602,9 @@ void Tracking::MonocularInitialization()
         int nmatches = matcher.SearchForInitialization(mInitialFrame,mCurrentFrame,mvbPrevMatched,mvIniMatches,100);
 
         // Check if there are enough correspondences
-        if(nmatches<100)
+        if(nmatches<80)
         {
+            cout << "nmatches " << nmatches << " < 80\n";
             delete mpInitializer;
             mpInitializer = static_cast<Initializer*>(NULL);
             return;
@@ -916,7 +919,7 @@ bool Tracking::TrackWithMotionModel()
             else if(mCurrentFrame.mvpMapPoints[i]->Observations()>0)
                 nmatchesMap++;
         }
-    }    
+    }
 
     if(mbOnlyTracking)
     {
@@ -1587,6 +1590,10 @@ void Tracking::InformOnlyTracking(const bool &flag)
     mbOnlyTracking = flag;
 }
 
+KeyFrame* Tracking::GetCurrentKeyFrame()
+{
+    return mpReferenceKF;
+}
 
 
 } //namespace ORB_SLAM
