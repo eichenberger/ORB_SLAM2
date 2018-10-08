@@ -28,6 +28,7 @@
 #include<opencv2/core/core.hpp>
 
 #include<System.h>
+#include <unistd.h>
 
 using namespace std;
 
@@ -59,7 +60,7 @@ int main(int argc, char **argv)
 
     cout << endl << "-------" << endl;
     cout << "Start processing sequence ..." << endl;
-    cout << "Images in the sequence: " << nImages << endl << endl;   
+    cout << "Images in the sequence: " << nImages << endl << endl;
 
     // Main loop
     cv::Mat imLeft, imRight;
