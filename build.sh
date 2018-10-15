@@ -1,5 +1,7 @@
 echo "Configuring and building Thirdparty/DBoW2 ..."
 
+source /opt/fsl-imx-x11/4.9.51-mx8-beta/environment-setup-aarch64-poky-linux
+
 cd Thirdparty/DBoW2
 mkdir build
 cd build
