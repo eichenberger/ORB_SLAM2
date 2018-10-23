@@ -32,6 +32,8 @@
 #include<System.h>
 #include <unistd.h>
 
+#include "xunit_lib_tara.h"
+
 using namespace std;
 using namespace cv;
 
@@ -54,6 +56,8 @@ int main(int argc, char **argv)
         return -1;
     }
 
+    InitExtensionUnit("test");
+
     cap.set(CAP_PROP_FPS, 30);
     cap.set(CAP_PROP_FRAME_WIDTH, 752);
     cap.set(CAP_PROP_FRAME_HEIGHT, 480);
@@ -67,7 +71,8 @@ int main(int argc, char **argv)
     cout << "Start processing sequence ..." << endl;
 
     // Main loop
-    cv::Mat imLeft, imRight, imFull;
+    cv::Mat imFull;
+    cv::Mat imLeft, imRight;
     while (1)
     {
         cap.read(imFull);
