@@ -1,6 +1,10 @@
 #include <iostream>
+#include <mutex>
 #include "ORBextractorOCV.h"
-#include "opencv2/imgproc.hpp"
+#include <opencv2/imgproc.hpp>
+#include <opencv2/core/ocl.hpp>
+
+#include "tp.h"
 
 using namespace std;
 using namespace cv;
@@ -22,23 +26,34 @@ void ORBextractorOCV::operator()( cv::InputArray image, cv::InputArray mask,
   std::vector<cv::KeyPoint>& keypoints,
   cv::OutputArray descriptors)
 {
-    (void) mask;
+    static ocl::Context &oclContext = ocl::Context::getDefault();
+    static const ocl::Device &oclDevice = oclContext.device(0);
+    static bool isIntel = oclDevice.isIntel();
+    static std::mutex gpulock;
     if(image.empty())
         return;
-    Size imsz = image.getMat().size();
-    orb->detect(image, keypoints);
-    orb->compute(image, keypoints, descriptors);
-    computeImagePyramid(image);
+
+    /* Unfortunately libpciaccess is not multithreading capable therefore
+     * we need to lock access to Intel Graphic cards.
+     * However, this works with vivante */
+    if (isIntel)
+      gpulock.lock();
+
+    tracepoint(my_provider, detectAndCompute);
+
+    mvImagePyramid.clear();
+    orb->detectAndComputeWithPyramid(image, mask, keypoints, descriptors, &mvImagePyramid);
+    tracepoint(my_provider, computeImagePyramid);
+    if (isIntel)
+      gpulock.unlock();
+    tracepoint(my_provider, endOperator);
 }
 
 void ORBextractorOCV::computeImagePyramid(cv::InputArray image)
 {
     mvImagePyramid[0] = image.getMat();
     for (int i = 1; i < nlevels; i++) {
-        //Size imSize = mvImagePyramid[i-1].size();
-        //int dwidth = imSize.width/mvScaleFactor[i];
-        //int dheight = imSize.height/mvScaleFactor[i];
-        cv::resize(mvImagePyramid[i-1], mvImagePyramid[i], Size(), 1/mvScaleFactor[i], 1/mvScaleFactor[i]);
+        cv::resize(mvImagePyramid[0], mvImagePyramid[i], Size(), 1/mvScaleFactor[i], 1/mvScaleFactor[i]);
     }
 }
 
