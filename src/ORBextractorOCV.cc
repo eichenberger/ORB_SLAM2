@@ -25,7 +25,6 @@ void ORBextractorOCV::operator()( cv::InputArray image, cv::InputArray mask,
     (void) mask;
     if(image.empty())
         return;
-    Size imsz = image.getMat().size();
     orb->detect(image, keypoints);
     orb->compute(image, keypoints, descriptors);
     computeImagePyramid(image);
@@ -35,10 +34,7 @@ void ORBextractorOCV::computeImagePyramid(cv::InputArray image)
 {
     mvImagePyramid[0] = image.getMat();
     for (int i = 1; i < nlevels; i++) {
-        //Size imSize = mvImagePyramid[i-1].size();
-        //int dwidth = imSize.width/mvScaleFactor[i];
-        //int dheight = imSize.height/mvScaleFactor[i];
-        cv::resize(mvImagePyramid[i-1], mvImagePyramid[i], Size(), 1/mvScaleFactor[i], 1/mvScaleFactor[i]);
+        cv::resize(mvImagePyramid[0], mvImagePyramid[i], Size(), 1/mvScaleFactor[i], 1/mvScaleFactor[i]);
     }
 }
 
