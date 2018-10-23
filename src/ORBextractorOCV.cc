@@ -4,8 +4,6 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/core/ocl.hpp>
 
-#include "tp.h"
-
 using namespace std;
 using namespace cv;
 using namespace ORB_SLAM2;
@@ -39,14 +37,10 @@ void ORBextractorOCV::operator()( cv::InputArray image, cv::InputArray mask,
     if (isIntel)
       gpulock.lock();
 
-    tracepoint(my_provider, detectAndCompute);
-
     mvImagePyramid.clear();
     orb->detectAndComputeWithPyramid(image, mask, keypoints, descriptors, &mvImagePyramid);
-    tracepoint(my_provider, computeImagePyramid);
     if (isIntel)
       gpulock.unlock();
-    tracepoint(my_provider, endOperator);
 }
 
 void ORBextractorOCV::computeImagePyramid(cv::InputArray image)
