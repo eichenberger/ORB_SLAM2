@@ -28,8 +28,12 @@ void ORBextractorOCV::operator()( cv::InputArray image, cv::InputArray mask,
     static const ocl::Device &oclDevice = oclContext.device(0);
     static bool isIntel = oclDevice.isIntel();
     static std::mutex gpulock;
+    static UMat uImage, uDescriptors;
+
     if(image.empty())
         return;
+
+    image.copyTo(uImage);
 
     /* Unfortunately libpciaccess is not multithreading capable therefore
      * we need to lock access to Intel Graphic cards.
@@ -38,9 +42,12 @@ void ORBextractorOCV::operator()( cv::InputArray image, cv::InputArray mask,
       gpulock.lock();
 
     mvImagePyramid.clear();
-    orb->detectAndComputeWithPyramid(image, mask, keypoints, descriptors, &mvImagePyramid);
+    orb->detectAndComputeWithPyramid(uImage, mask, keypoints, uDescriptors, &mvImagePyramid);
     if (isIntel)
       gpulock.unlock();
+
+    uDescriptors.copyTo(descriptors);
+
 }
 
 void ORBextractorOCV::computeImagePyramid(cv::InputArray image)

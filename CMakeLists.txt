@@ -7,8 +7,8 @@ ENDIF()
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall  -O3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -ggdb")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall  -O3 -ggdb")
 
 SET(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-I")
 SET(CMAKE_INCLUDE_SYSTEM_FLAG_C "-I")
@@ -100,6 +100,10 @@ target_link_libraries(stereo_kitti ${PROJECT_NAME})
 add_executable(stereo_econ
 Examples/Stereo/stereo_econ.cc Examples/Stereo/xunit_lib_tara.cpp)
 target_link_libraries(stereo_econ ${PROJECT_NAME} udev)
+
+add_executable(stereo_antmicro
+Examples/Stereo/stereo_antmicro.cc)
+target_link_libraries(stereo_antmicro ${PROJECT_NAME})
 
 add_executable(stereo_euroc
 Examples/Stereo/stereo_euroc.cc)

@@ -18,7 +18,6 @@
 * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include<iostream>
 #include<algorithm>
 #include<fstream>
@@ -27,6 +26,7 @@
 #include<unistd.h>
 
 #include<opencv2/core/core.hpp>
+#include<opencv2/core/utils/logger.hpp>
 
 #include<System.h>
 
@@ -42,6 +42,15 @@ int main(int argc, char **argv)
         cerr << endl << "Usage: ./stereo_euroc path_to_vocabulary path_to_settings path_to_left_folder path_to_right_folder path_to_times_file" << endl;
         return 1;
     }
+
+    cout << "Set log level to verbose" << endl;
+    cout << "strip level " << CV_LOG_STRIP_LEVEL << endl;
+    cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_VERBOSE);
+    cout << "current log level " << cv::utils::logging::getLogLevel() << endl;
+
+    CV_LOG_DEBUG(NULL, "Test debug fuck");
+    CV_LOG_VERBOSE(NULL, "bla", "Test verbose");
+
 
     // Retrieve paths to images
     vector<string> vstrImageLeft;
