@@ -105,10 +105,13 @@ add_executable(stereo_antmicro
 Examples/Stereo/stereo_antmicro.cc)
 target_link_libraries(stereo_antmicro ${PROJECT_NAME})
 
+add_executable(save_video
+Examples/Stereo/save_video.cc)
+target_link_libraries(save_video ${PROJECT_NAME})
+
 add_executable(stereo_euroc
 Examples/Stereo/stereo_euroc.cc)
 target_link_libraries(stereo_euroc ${PROJECT_NAME})
-
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
 

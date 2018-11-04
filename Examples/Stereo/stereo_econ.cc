@@ -37,9 +37,6 @@
 using namespace std;
 using namespace cv;
 
-void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
-                vector<string> &vstrImageRight, vector<double> &vTimestamps);
-
 int main(int argc, char **argv)
 {
     if(argc != 4)
@@ -56,13 +53,8 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    InitExtensionUnit("test");
-
-    cap.set(CAP_PROP_FPS, 30);
     cap.set(CAP_PROP_FRAME_WIDTH, 752);
     cap.set(CAP_PROP_FRAME_HEIGHT, 480);
-//    cap.set(CAP_PROP_AUTO_EXPOSURE, 1);
-    cap.set(CAP_PROP_EXPOSURE, 5);
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::STEREO,true);
@@ -108,55 +100,5 @@ int main(int argc, char **argv)
     // Stop all threads
     SLAM.Shutdown();
 
-//    // Tracking time statistics
-//    sort(vTimesTrack.begin(),vTimesTrack.end());
-//    float totaltime = 0;
-//    for(int ni=0; ni<nImages; ni++)
-//    {
-//        totaltime+=vTimesTrack[ni];
-//    }
-//    cout << "-------" << endl << endl;
-//    cout << "median tracking time: " << vTimesTrack[nImages/2] << endl;
-//    cout << "mean tracking time: " << totaltime/nImages << endl;
-//
-//    // Save camera trajectory
-//    SLAM.SaveTrajectoryKITTI("CameraTrajectory.txt");
-
     return 0;
-}
-
-void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
-                vector<string> &vstrImageRight, vector<double> &vTimestamps)
-{
-    ifstream fTimes;
-    string strPathTimeFile = strPathToSequence + "/times.txt";
-    fTimes.open(strPathTimeFile.c_str());
-    while(!fTimes.eof())
-    {
-        string s;
-        getline(fTimes,s);
-        if(!s.empty())
-        {
-            stringstream ss;
-            ss << s;
-            double t;
-            ss >> t;
-            vTimestamps.push_back(t);
-        }
-    }
-
-    string strPrefixLeft = strPathToSequence + "/image_0/";
-    string strPrefixRight = strPathToSequence + "/image_1/";
-
-    const int nTimes = vTimestamps.size();
-    vstrImageLeft.resize(nTimes);
-    vstrImageRight.resize(nTimes);
-
-    for(int i=0; i<nTimes; i++)
-    {
-        stringstream ss;
-        ss << setfill('0') << setw(6) << i;
-        vstrImageLeft[i] = strPrefixLeft + ss.str() + ".png";
-        vstrImageRight[i] = strPrefixRight + ss.str() + ".png";
-    }
 }
