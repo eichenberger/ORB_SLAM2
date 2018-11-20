@@ -26,6 +26,7 @@
 #include "MapDrawer.h"
 #include "Tracking.h"
 #include "System.h"
+#include "Densify.h"
 
 #include <mutex>
 
@@ -40,7 +41,7 @@ class System;
 class Viewer
 {
 public:
-    Viewer(System* pSystem, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Tracking *pTracking, const string &strSettingPath);
+    Viewer(System* pSystem, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Tracking *pTracking, Densify *pDensify, const string &strSettingPath);
 
     // Main thread function. Draw points, keyframes, the current camera pose and the last processed
     // frame. Drawing is refreshed according to the camera fps. We use Pangolin.
@@ -64,6 +65,7 @@ private:
     FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;
     Tracking* mpTracker;
+    Densify *mDensify;
 
     // 1/fps in ms
     double mT;
@@ -87,5 +89,5 @@ private:
 
 
 #endif // VIEWER_H
-	
+
 

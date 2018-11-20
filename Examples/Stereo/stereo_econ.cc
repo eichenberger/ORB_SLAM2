@@ -56,6 +56,17 @@ int main(int argc, char **argv)
     cap.set(CAP_PROP_FRAME_WIDTH, 752);
     cap.set(CAP_PROP_FRAME_HEIGHT, 480);
 
+    BOOL ret = InitExtensionUnit("usb-0000:00:14.0-1/input2");
+    if (ret != SUCCESS){
+        cerr << "ERROR: init extension unit" << endl;
+        return -1;
+    }
+    ret = SetAutoExposureStereo();
+    if (ret != SUCCESS){
+        cerr << "ERROR: set auto exposure" << endl;
+        return -1;
+    }
+
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::STEREO,true);
 

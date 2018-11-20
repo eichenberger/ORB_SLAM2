@@ -1903,7 +1903,7 @@ int find_hid_device(char *videobusname)
 
 		/* Get the filename of the /sys entry for the device and create a udev_device object (dev) representing it */
 		path = udev_list_entry_get_name(dev_list_entry);
-		printf("Paht: %s", path);
+		printf("Path: %s\n", path);
 		dev = udev_device_new_from_syspath(udev, path);
 
 		/* usb_device_get_devnode() returns the path to the device node itself in /dev. */
@@ -1945,19 +1945,21 @@ int find_hid_device(char *videobusname)
 		if (ret < 0) {
 			perror("find_hid_device : HIDIOCGRAWPHYS");
 		}
+		printf("Busname: %s\n", buf);
 		//check if bus names are same or else close the hid device
-		if(!strncmp(videobusname,buf,strlen(videobusname))){
-			ret = SUCCESS;
-			hid_device_array[countHidDevices] = hid_device;
-			countHidDevices++;
-		}
-		/* Close the hid fd */
-		if(hid_fd > 0)
-		{
-			if(close(hid_fd) < 0) {
-				printf("\nFailed to close %s\n",hid_device);
-			}
-		}
+		//if(!strncmp(videobusname,buf,strlen(videobusname))){
+		ret = SUCCESS;
+		hid_device_array[countHidDevices] = hid_device;
+		countHidDevices++;
+		break;
+		//}
+		///* Close the hid fd */
+		//if(hid_fd > 0)
+		//{
+		//	if(close(hid_fd) < 0) {
+		//		printf("\nFailed to close %s\n",hid_device);
+		//	}
+		//}
 	}
 	/* Free the enumerator object */
 	udev_enumerate_unref(enumerate);

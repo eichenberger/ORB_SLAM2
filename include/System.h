@@ -35,6 +35,7 @@
 #include "KeyFrameDatabase.h"
 #include "ORBVocabulary.h"
 #include "Viewer.h"
+#include "Densify.h"
 
 namespace ORB_SLAM2
 {
@@ -174,6 +175,10 @@ private:
     std::vector<MapPoint*> mTrackedMapPoints;
     std::vector<cv::KeyPoint> mTrackedKeyPointsUn;
     std::mutex mMutexState;
+
+    // Densifyier
+    Densify* mDensify;
+    std::thread* mtDensify;
 };
 
 }// namespace ORB_SLAM

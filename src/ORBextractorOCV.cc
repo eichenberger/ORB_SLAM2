@@ -28,25 +28,37 @@ void ORBextractorOCV::operator()( cv::InputArray image, cv::InputArray mask,
     static const ocl::Device &oclDevice = oclContext.device(0);
     static bool isIntel = oclDevice.isIntel();
     static std::mutex gpulock;
-    static UMat uImage, uDescriptors;
 
     if(image.empty())
         return;
 
-    image.copyTo(uImage);
+#if 1
+    /* Unfortunately libpciaccess is not multithreading capable therefore
+     * we need to lock access to Intel Graphic cards.
+     * However, this works with vivante */
+    gpulock.lock();
+
+    mvImagePyramid.clear();
+    orb->detectAndComputeWithPyramid(image, mask, keypoints, descriptors, &mvImagePyramid);
+    Size s = descriptors.size();
+
+    gpulock.unlock();
+
+#else
+    UMat uImage, uDescriptors;
 
     /* Unfortunately libpciaccess is not multithreading capable therefore
      * we need to lock access to Intel Graphic cards.
      * However, this works with vivante */
-    if (isIntel)
-      gpulock.lock();
-
     mvImagePyramid.clear();
-    orb->detectAndComputeWithPyramid(uImage, mask, keypoints, uDescriptors, &mvImagePyramid);
-    if (isIntel)
-      gpulock.unlock();
+    image.copyTo(uImage);
 
+    descriptors.release();
+    orb->detectAndComputeWithPyramid(uImage, mask, keypoints, uDescriptors, &mvImagePyramid);
+    uImage.release();
     uDescriptors.copyTo(descriptors);
+    uDescriptors.release();
+#endif
 
 }
 

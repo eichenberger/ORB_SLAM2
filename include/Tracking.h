@@ -37,6 +37,7 @@
 #include "Initializer.h"
 #include "MapDrawer.h"
 #include "System.h"
+#include "Densify.h"
 
 #include <mutex>
 
@@ -51,11 +52,11 @@ class LoopClosing;
 class System;
 
 class Tracking
-{  
+{
 
 public:
     Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Map* pMap,
-             KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor);
+             KeyFrameDatabase* pKFDB, Densify *densify, const string &strSettingPath, const int sensor);
 
     // Preprocess the input and call Track(). Extract features and performs stereo matching.
     cv::Mat GrabImageStereo(const cv::Mat &imRectLeft,const cv::Mat &imRectRight, const double &timestamp);
@@ -169,10 +170,10 @@ protected:
     KeyFrame* mpReferenceKF;
     std::vector<KeyFrame*> mvpLocalKeyFrames;
     std::vector<MapPoint*> mvpLocalMapPoints;
-    
+
     // System
     System* mpSystem;
-    
+
     //Drawers
     Viewer* mpViewer;
     FrameDrawer* mpFrameDrawer;
@@ -212,6 +213,10 @@ protected:
 
     //Color order (true RGB, false BGR, ignored if grayscale)
     bool mbRGB;
+
+    //Densify (Stereo)
+    Densify *mDensify;
+
 
     list<MapPoint*> mlpTemporalPoints;
 };

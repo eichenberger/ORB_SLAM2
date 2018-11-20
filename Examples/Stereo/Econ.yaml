@@ -23,13 +23,14 @@ Camera.fps: 30.0
 
 # stereo baseline times fx (in mm)
 #Camera.bf: 3242.2
-Camera.bf: 45.24
+#Camera.bf: 258.0
+Camera.bf: 45.1932
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
 
 # Close/Far threshold. Baseline times.
-ThDepth: 100.0
+ThDepth: 50.0
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
@@ -64,3 +65,15 @@ Viewer.ViewpointX: 0
 Viewer.ViewpointY: -100
 Viewer.ViewpointZ: -0.1
 Viewer.ViewpointF: 2000
+
+stereobm.blockSize: 15
+stereobm.numDisparities: 64
+stereobm.preFilterSize: 19
+stereobm.preFilterCap: 16
+stereobm.minDisparity: 0
+stereobm.textureThreshold: 5
+stereobm.uniquenessRatio: 1
+stereobm.speckleWindowSize: 350
+stereobm.speckleRange: 31
+stereobm.disp12MaxDiff: 1
+

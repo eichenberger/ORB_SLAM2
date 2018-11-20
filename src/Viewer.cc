@@ -27,8 +27,16 @@
 namespace ORB_SLAM2
 {
 
-Viewer::Viewer(System* pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Tracking *pTracking, const string &strSettingPath):
-    mpSystem(pSystem), mpFrameDrawer(pFrameDrawer),mpMapDrawer(pMapDrawer), mpTracker(pTracking),
+void mouseHandler(int event, int x, int y, int flags, void *userData)
+{
+    Mat *img = static_cast<Mat*>(userData);
+
+    if (event == EVENT_LBUTTONDOWN)
+        printf("Distance at %dx%d: %f\n", x, y, img->at<double>(y, x));
+}
+
+Viewer::Viewer(System* pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Tracking *pTracking, Densify *pDensify, const string &strSettingPath):
+    mpSystem(pSystem), mpFrameDrawer(pFrameDrawer),mpMapDrawer(pMapDrawer), mpTracker(pTracking), mDensify(pDensify),
     mbFinishRequested(false), mbFinished(true), mbStopped(true), mbStopRequested(false)
 {
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
@@ -71,6 +79,7 @@ void Viewer::Run()
     pangolin::Var<bool> menuShowPoints("menu.Show Points",true,true);
     pangolin::Var<bool> menuShowKeyFrames("menu.Show KeyFrames",true,true);
     pangolin::Var<bool> menuShowGraph("menu.Show Graph",true,true);
+    pangolin::Var<bool> menuShowDenseCloud("menu.Show Dense Cloud",false,true);
     pangolin::Var<bool> menuLocalizationMode("menu.Localization Mode",false,true);
     pangolin::Var<bool> menuReset("menu.Reset",false,false);
 
@@ -89,6 +98,9 @@ void Viewer::Run()
     Twc.SetIdentity();
 
     cv::namedWindow("ORB-SLAM2: Current Frame");
+    cv::namedWindow("ORB-SLAM2: Depth Image");
+    cv::Mat depth;
+    cv::setMouseCallback("ORB-SLAM2: Depth Image", mouseHandler, &depth);
 
     bool bFollow = true;
     bool bLocalizationMode = false;
@@ -137,6 +149,9 @@ void Viewer::Run()
 
         cv::Mat im = mpFrameDrawer->DrawFrame();
         cv::imshow("ORB-SLAM2: Current Frame",im);
+        depth = mDensify->getDepthImage();
+        if (depth.size[0] > 0 && depth.size[1] > 0)
+            cv::imshow("ORB-SLAM2: Depth Image", depth);
         cv::waitKey(mT);
 
         if(menuReset)
