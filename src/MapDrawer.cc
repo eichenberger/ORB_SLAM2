@@ -28,7 +28,8 @@ namespace ORB_SLAM2
 {
 
 
-MapDrawer::MapDrawer(Map* pMap, const string &strSettingPath):mpMap(pMap)
+MapDrawer::MapDrawer(Map* pMap, Densify *pDensify, const string &strSettingPath):
+    mpMap(pMap), mDensify(pDensify)
 {
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
 
@@ -80,6 +81,20 @@ void MapDrawer::DrawMapPoints()
     glEnd();
 }
 
+void MapDrawer::DrawDensePoints()
+{
+    const PointCloud<PointXYZI> denseCloud = mDensify->getDenseCloud();
+
+    glPointSize(2);
+    glBegin(GL_POINTS);
+
+    for (auto &point : denseCloud)
+    {
+        glColor3f(point.intensity, point.intensity, point.intensity);
+        glVertex3f(point.x,point.y,point.z);
+    }
+    glEnd();
+}
 void MapDrawer::DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph)
 {
     const float &w = mKeyFrameSize;

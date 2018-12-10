@@ -66,7 +66,7 @@ Viewer.ViewpointY: -100
 Viewer.ViewpointZ: -0.1
 Viewer.ViewpointF: 2000
 
-stereobm.blockSize: 15
+stereobm.blockSize: 21
 stereobm.numDisparities: 64
 stereobm.preFilterSize: 19
 stereobm.preFilterCap: 16

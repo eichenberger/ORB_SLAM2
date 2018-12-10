@@ -8,77 +8,63 @@ using namespace std;
 using namespace cv;
 using namespace ORB_SLAM2;
 
-Depth::Depth(double baseline): m_baseline(baseline)
+Depth::Depth(const cv::FileStorage &fsSettings)
 {
-    left_matcher = StereoBM::create();
-}
+    left_matcher = StereoSGBM::create();
 
-void Depth::setBlockSize(int value)
-{
-    left_matcher->setBlockSize(value);
-}
+    float cn = fsSettings["stereosgbm.cn"];
+    float sgbm_preFilterCap = fsSettings["stereosgbm.preFilterCap"];
+    float sgbm_SADWindowSize = fsSettings["stereosgbm.SADWindowSize"];
+    float sgbm_minDisparity = fsSettings["stereosgbm.minDisparity"];
+    float sgbm_speckleRange = fsSettings["stereosgbm.speckleRange"];
+    float sgbm_disp12MaxDiff = fsSettings["stereosgbm.disp12MaxDiff"];
+    float sgbm_uniquenessRatio  = fsSettings["stereosgbm.uniquenessRatio "];
+    float sgbm_speckleWindowSize  = fsSettings["stereosgbm.speckleWindowSize "];
+    float sgbm_numberOfDisparities = fsSettings["stereosgbm.numberOfDisparities"];
 
-void Depth::setNumDisparities(int value)
-{
-    left_matcher->setNumDisparities(value);
-}
+    m_baseline = fsSettings["Camera.bf"];
 
-void Depth::setPreFilterSize(int value)
-{
-    left_matcher->setPreFilterSize(value);
-}
+    left_matcher->setPreFilterCap(sgbm_preFilterCap);
+    left_matcher->setBlockSize (sgbm_SADWindowSize > 0 ? sgbm_SADWindowSize : 3);
+    left_matcher->setP1(8 * cn * sgbm_SADWindowSize * sgbm_SADWindowSize);
+    left_matcher->setP2(32 * cn * sgbm_SADWindowSize * sgbm_SADWindowSize);
+    left_matcher->setNumDisparities(sgbm_numberOfDisparities);
+    left_matcher->setMinDisparity(sgbm_minDisparity);
+    left_matcher->setUniquenessRatio(sgbm_uniquenessRatio);
+    left_matcher->setSpeckleWindowSize(sgbm_speckleWindowSize);
+    left_matcher->setSpeckleRange(sgbm_speckleRange);
+    left_matcher->setDisp12MaxDiff(sgbm_disp12MaxDiff);
 
-void Depth::setPreFilterCap(int value)
-{
-    left_matcher->setPreFilterCap(value);
-}
+    left_matcher->setMode(cv::StereoSGBM::MODE_SGBM_3WAY);
 
-void Depth::setMinDisparity(int value)
-{
-    left_matcher->setMinDisparity(value);
+    right_matcher = ximgproc::createRightMatcher(left_matcher.dynamicCast<StereoMatcher>());
+    wls_filter = ximgproc::createDisparityWLSFilter(left_matcher);
+    wls_filter->setLambda(4000.0);
+    wls_filter->setSigmaColor(1.0);
 }
-
-void Depth::setTextureThreshold(int value)
-{
-    left_matcher->setTextureThreshold(value);
-}
-
-void Depth::setUniquenessRatio(int value)
-{
-    left_matcher->setUniquenessRatio(value);
-}
-
-void Depth::setSpeckleWindowSize(int value)
-{
-    left_matcher->setSpeckleWindowSize(value);
-}
-
-void Depth::setSpeckleRange(int value)
-{
-    left_matcher->setSpeckleRange(value);
-}
-
-void Depth::setDisp12MaxDiff(int value)
-{
-    left_matcher->setDisp12MaxDiff(value);
-}
-
 
 void Depth::calculateDepth(const Mat &imLeft, const Mat &imRight)
 {
-    Mat tmpDisparity;
-    left_matcher->compute(imLeft, imRight, tmpDisparity);
+    Mat disparityL, disparityR, disparityFiltered;
+
+    left_matcher->compute(imLeft, imRight, disparityL);
+    right_matcher->compute(imRight, imLeft, disparityR);
+
+    // TODO: replace 10.0 with dynamic value
+    wls_filter->filter(disparityL, imLeft, disparityFiltered, disparityR);
+    Mat confidence = wls_filter->getConfidenceMap();
+
+    Mat filter;
+
+    threshold(confidence, filter, 192, 1, THRESH_BINARY);
+
 
     Mat disparityFractional;
-    tmpDisparity.convertTo(disparityFractional, CV_32F, 1.0/15.0);
+    disparityFiltered.convertTo(disparityFractional, CV_32F, 1.0/15.0);
 
-    Mat tmpDepth;
-    tmpDepth = m_baseline/disparityFractional;
-    Mat filter;
-    // TODO: replace 10.0 with dynamic value
-    cv::threshold(tmpDepth, filter, 10.0, 1.0, THRESH_BINARY_INV);
+    mDepth = m_baseline/disparityFractional;
 
-    mDepth = filter.mul(tmpDepth);
+    mDepth = mDepth.mul(filter, 1.0);
 }
 
 const Mat& Depth::getDepthImage()

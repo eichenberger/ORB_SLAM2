@@ -24,6 +24,7 @@
 #include"Map.h"
 #include"MapPoint.h"
 #include"KeyFrame.h"
+#include "Densify.h"
 #include<pangolin/pangolin.h>
 
 #include<mutex>
@@ -34,11 +35,12 @@ namespace ORB_SLAM2
 class MapDrawer
 {
 public:
-    MapDrawer(Map* pMap, const string &strSettingPath);
+    MapDrawer(Map* pMap, Densify *pDensify, const string &strSettingPath);
 
     Map* mpMap;
 
     void DrawMapPoints();
+    void DrawDensePoints();
     void DrawKeyFrames(const bool bDrawKF, const bool bDrawGraph);
     void DrawCurrentCamera(pangolin::OpenGlMatrix &Twc);
     void SetCurrentCameraPose(const cv::Mat &Tcw);
@@ -46,6 +48,7 @@ public:
     void GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M);
 
 private:
+    Densify *mDensify;
 
     float mKeyFrameSize;
     float mKeyFrameLineWidth;

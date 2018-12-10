@@ -14,6 +14,7 @@ ORBextractorOCV::ORBextractorOCV(int _nfeatures, float _scaleFactor, int _nlevel
 
 {
     orb = ORB::create(nfeatures, scaleFactor, nlevels);
+    orb->setFastThreshold(_iniThFAST);
 }
 
 

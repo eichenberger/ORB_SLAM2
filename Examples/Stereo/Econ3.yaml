@@ -1,0 +1,141 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!
+#--------------------------------------------------------------------------------------------
+
+# Camera calibration and distortion parameters (OpenCV) 
+Camera.fx: 7.1841828670020379e+002
+Camera.fy: 7.1841828670020379e+002
+Camera.cx: 3.7638853442187076e+002
+Camera.cy: 2.3006990515552366e+002
+
+Camera.k1: 0.0
+Camera.k2: 0.0
+Camera.p1: 0.0
+Camera.p2: 0.0
+
+Camera.width: 752
+Camera.height: 480
+
+# Camera frames per second 
+Camera.fps: 10.0
+
+# stereo baseline times fx (in mm)
+#Camera.bf: 3242.2
+#Camera.bf: 258.0
+Camera.bf: 451.932
+
+# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
+Camera.RGB: 1
+
+# Close/Far threshold. Baseline times.
+ThDepth: 10.0
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+
+# ORB Extractor: Number of features per image
+ORBextractor.nFeatures: 1000
+
+# ORB Extractor: Scale factor between levels in the scale pyramid 	
+ORBextractor.scaleFactor: 1.2
+
+# ORB Extractor: Number of levels in the scale pyramid	
+ORBextractor.nLevels: 6
+
+# ORB Extractor: Fast threshold
+# Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
+# Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
+# You can lower these values if your images have low contrast			
+ORBextractor.iniThFAST: 7 
+ORBextractor.minThFAST: 5
+
+LEFT.height: 480
+LEFT.width: 752
+LEFT.D: !!opencv-matrix
+   rows: 1
+   cols: 14
+   dt: d
+   data: [ 7.5620947815122297e-002, -9.8224483383845235e-002,
+       1.7694572281528150e-004, 1.0498326490202836e-003, 0., 0., 0., 0.,
+       0., 0., 0., 0., 0., 0. ]
+LEFT.K: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ 7.1841828670020379e+002, 0., 3.7638853442187076e+002, 0.,
+       7.1841828670020379e+002, 2.3006990515552366e+002, 0., 0., 1. ]
+LEFT.R: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ 9.9931656237091238e-001, 4.5033600429649016e-004,
+       -3.6962215418797031e-002, -4.7916126076341279e-004,
+       9.9999958797963295e-001, -7.7100262675308283e-004,
+       3.6961852979369270e-002, 7.8818655628648841e-004,
+       9.9931636641570321e-001 ]
+LEFT.P: !!opencv-matrix
+   rows: 3
+   cols: 4
+   dt: d
+   data: [ 7.4582825119288293e+002, 0., 4.1000555038452148e+002, 0., 0.,
+       7.4582825119288293e+002, 2.3022048950195312e+002, 0., 0., 0., 1.,
+       0. ]
+
+RIGHT.height: 480
+RIGHT.width: 752
+RIGHT.D: !!opencv-matrix
+   rows: 1
+   cols: 14
+   dt: d
+   data: [ 6.3934818485477427e-002, -3.3170723398806196e-002,
+       1.0571783450055603e-003, -1.5566386680265507e-004, 0., 0., 0., 0.,
+       0., 0., 0., 0., 0., 0. ]
+RIGHT.K: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ 7.1841828670020379e+002, 0., 3.7705303722900277e+002, 0.,
+       7.1841828670020379e+002, 2.2954992517383553e+002, 0., 0., 1. ]
+RIGHT.R: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ 9.9935714426088018e-001, 2.9288433431315314e-003,
+       -3.5731220122040053e-002, -2.9009773472295605e-003,
+       9.9999544629442794e-001, 8.3169756439770788e-004,
+       3.5733493324458902e-002, -7.2750744268233703e-004,
+       9.9936108999087592e-001 ]
+RIGHT.P: !!opencv-matrix
+   rows: 3
+   cols: 4
+   dt: d
+   data: [ 7.4582825119288293e+002, 0., 4.1000555038452148e+002,
+       -4.4522859359834096e+004, 0., 7.4582825119288293e+002,
+       2.3022048950195312e+002, 0., 0., 0., 1., 0. ]
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.15
+Viewer.KeyFrameLineWidth: 1
+Viewer.GraphLineWidth: 1
+Viewer.PointSize: 5
+Viewer.CameraSize: 0.2
+Viewer.CameraLineWidth: 2
+Viewer.ViewpointX: 0
+Viewer.ViewpointY: -100
+Viewer.ViewpointZ: -0.1
+Viewer.ViewpointF: 2000
+
+stereosgbm.cn: 1
+stereosgbm.preFilterCap: 61
+stereosgbm.SADWindowSize: 8
+stereosgbm.minDisparity: 0
+stereosgbm.speckleRange: 31
+stereosgbm.disp12MaxDiff: 1
+stereosgbm.uniquenessRatio: 0
+stereosgbm.speckleWindowSize: 200
+stereosgbm.numberOfDisparities: 64

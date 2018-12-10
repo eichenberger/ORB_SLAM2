@@ -28,70 +28,80 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
+#include <pcl/filters/voxel_grid.h>
 #include "KeyFrame.h"
-#include "MapDrawer.h"
 #include "Depth.h"
+#include "Map.h"
 
 using namespace std;
 using namespace cv;
+using namespace pcl;
 
 
 namespace ORB_SLAM2
 {
 
-typedef struct
-{
-    Mat position;
-    uint8_t brightness;
-} DensePoint;
-
 class StereoImage
 {
 public:
-    StereoImage(const Mat _imLeft, Mat _imRight, KeyFrame *_kf):
+    StereoImage(Mat _imLeft, Mat _imRight, Mat _Q,
+            long unsigned int _id, bool _verified):
         imLeft(_imLeft),
         imRight(_imRight),
-        kf(_kf) {}
+        Q(_Q),
+        id(_id),
+        verified(_verified){}
     Mat imLeft;
     Mat imRight;
-    KeyFrame *kf;
+    Mat Q;
+    long unsigned int id;
+    bool verified;
 };
 
 class Densify
 {
 public:
-    Densify(const string &strSettingPath, MapDrawer* pMapDrawer);
+    Densify(const string &strSettingPath);
     ~Densify(){}
 
     void InsertKeyFrame(KeyFrame *kf,const Mat *imLeft,const Mat *imRight);
+    void SetVerified(long unsigned int id);
+    void RemoveKeyFrame(long unsigned int id);
 
     void Run();
     void RequestFinish();
 
     Mat getDepthImage();
-    Mat getDenseCloud();
+    PointCloud<PointXYZI> getDenseCloud();
+
+    void Reset();
 
 protected:
     bool CheckFinish();
     bool mbFinished;
     std::mutex mMutexFinish;
 
-    void GenerateDenseCloud();
+    void GenerateDenseCloud(Mat Q, const Mat &image);
 
-    MapDrawer* mpMapDrawer;
     bool mbFinishRequested;
 
     float fx;
-    float bf;
+    float fy;
+    float cx;
+    float cy;
 
     Ptr<Depth> mDepth;
     std::mutex mDepthLock;
 
 
-    vector<Mat> denseCloud;
+    PointCloud<PointXYZI> denseCloud;
     std::mutex mDenseLock;
 
     std::mutex mLock;
+    list<StereoImage> stereoImages;
+
 };
 
 } //namespace ORB_SLAM

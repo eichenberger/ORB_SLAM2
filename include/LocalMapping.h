@@ -26,6 +26,7 @@
 #include "LoopClosing.h"
 #include "Tracking.h"
 #include "KeyFrameDatabase.h"
+#include "Densify.h"
 
 #include <mutex>
 
@@ -40,7 +41,7 @@ class Map;
 class LocalMapping
 {
 public:
-    LocalMapping(Map* pMap, const float bMonocular);
+    LocalMapping(Map* pMap, const float bMonocular, Densify *pDensify);
 
     void SetLoopCloser(LoopClosing* pLoopCloser);
 
@@ -121,6 +122,8 @@ protected:
 
     bool mbAcceptKeyFrames;
     std::mutex mMutexAccept;
+
+    Densify* mpDensify;
 };
 
 } //namespace ORB_SLAM

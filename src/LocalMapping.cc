@@ -29,9 +29,10 @@
 namespace ORB_SLAM2
 {
 
-LocalMapping::LocalMapping(Map *pMap, const float bMonocular):
+LocalMapping::LocalMapping(Map* pMap, const float bMonocular, Densify *pDensify):
     mbMonocular(bMonocular), mbResetRequested(false), mbFinishRequested(false), mbFinished(true), mpMap(pMap),
-    mbAbortBA(false), mbStopped(false), mbStopRequested(false), mbNotStop(false), mbAcceptKeyFrames(true)
+    mbAbortBA(false), mbStopped(false), mbStopRequested(false), mbNotStop(false), mbAcceptKeyFrames(true),
+    mpDensify(pDensify)
 {
 }
 
@@ -691,8 +692,13 @@ void LocalMapping::KeyFrameCulling()
             }
         }
 
-        if(nRedundantObservations>0.9*nMPs)
+        if(nRedundantObservations>0.5*nMPs) {
+            mpDensify->RemoveKeyFrame(pKF->mnFrameId);
             pKF->SetBadFlag();
+        }
+        else {
+            mpDensify->SetVerified(pKF->mnFrameId);
+        }
     }
 }
 

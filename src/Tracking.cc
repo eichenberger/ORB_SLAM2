@@ -171,6 +171,9 @@ cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRe
     mImGray = imRectLeft;
     cv::Mat imGrayRight = imRectRight;
 
+    // Get Map Mutex -> Map cannot be changed
+    unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
+
     if(mImGray.channels()==3)
     {
         if(mbRGB)
@@ -200,12 +203,17 @@ cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRe
 
     mCurrentFrame = Frame(mImGray,imGrayRight,timestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth);
 
+    int mStateBeforeTrack = mState;
+
     Track();
 
     // Check if current frame is key frame
-    if (mCurrentFrame.mnId == mCurrentFrame.mpReferenceKF->mnFrameId)
+    if ((mState == OK) && (mCurrentFrame.mnId == mCurrentFrame.mpReferenceKF->mnFrameId) &&
+            (mImGray.rows > 0))
         mDensify->InsertKeyFrame(mCurrentFrame.mpReferenceKF, &mImGray, &imGrayRight);
 
+    if ((mStateBeforeTrack != mState) && (mState == OK))
+        mDensify->SetVerified(mCurrentFrame.mnId);
 
     return mCurrentFrame.mTcw.clone();
 }
@@ -280,8 +288,6 @@ void Tracking::Track()
 
     mLastProcessedState=mState;
 
-    // Get Map Mutex -> Map cannot be changed
-    unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
 
     if(mState==NOT_INITIALIZED)
     {
@@ -1510,6 +1516,7 @@ bool Tracking::Relocalization()
 
 void Tracking::Reset()
 {
+    unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
 
     cout << "System Reseting" << endl;
     if(mpViewer)
@@ -1533,6 +1540,10 @@ void Tracking::Reset()
     cout << "Reseting Database...";
     mpKeyFrameDB->clear();
     cout << " done" << endl;
+
+    cout << "Reseting Densify...";
+    mDensify->Reset();
+    cout << " done";
 
     // Clear Map (this erase MapPoints and KeyFrames)
     mpMap->clear();

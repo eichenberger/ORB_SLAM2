@@ -27,6 +27,7 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>
+#include <opencv2/ximgproc.hpp>
 #include "KeyFrame.h"
 
 using namespace std;
@@ -40,26 +41,17 @@ class Depth
 {
 public:
 
-    Depth(double baseline);
+    Depth(const cv::FileStorage &fsSettings);
     ~Depth(){}
-
-    void setBlockSize(int value);
-    void setNumDisparities(int value);
-    void setPreFilterSize(int value);
-    void setPreFilterCap(int value);
-    void setMinDisparity(int value);
-    void setTextureThreshold(int value);
-    void setUniquenessRatio(int value);
-    void setSpeckleWindowSize(int value);
-    void setSpeckleRange(int value);
-    void setDisp12MaxDiff(int value);
 
     void calculateDepth(const Mat &left, const Mat &right);
     const Mat& getDepthImage();
 
 protected:
     double m_baseline;
-    Ptr<StereoBM> left_matcher;
+    Ptr<StereoSGBM> left_matcher;
+    Ptr<StereoMatcher> right_matcher;
+    Ptr<ximgproc::DisparityWLSFilter> wls_filter;
     Mat mDepth;
 };
 
