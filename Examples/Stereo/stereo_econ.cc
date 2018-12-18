@@ -37,6 +37,17 @@
 using namespace std;
 using namespace cv;
 
+static void setAutoExposure()
+{
+    SetAutoExposureStereo();
+}
+
+static void setManualExposure(int exposure)
+{
+    cout << "set manual exposure " << exposure << endl;
+    SetManualExposureStereo(exposure);
+}
+
 int main(int argc, char **argv)
 {
     if(argc != 4)
@@ -106,6 +117,9 @@ int main(int argc, char **argv)
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::STEREO,true);
+    SLAM.getViewer()->setAutoExposureCallback(setAutoExposure);
+    SLAM.getViewer()->setManualExposureCallback(setManualExposure);
+
 
     cout << endl << "-------" << endl;
     cout << "Start processing sequence ..." << endl;

@@ -24,6 +24,8 @@
 #include <mutex>
 #include <unistd.h>
 
+#include "../Examples/Stereo/xunit_lib_tara.h"
+
 namespace ORB_SLAM2
 {
 
@@ -31,13 +33,15 @@ void mouseHandler(int event, int x, int y, int flags, void *userData)
 {
     Mat *img = static_cast<Mat*>(userData);
 
-    if (event == EVENT_LBUTTONDOWN)
-        printf("Distance at %dx%d: %f\n", x, y, img->at<double>(y, x));
+    if (event == EVENT_LBUTTONDOWN) {
+        cout << "Img size: " << img->rows << "x" << img->cols << endl;
+        cout << "Distance at " << x << "x" << y << ": " << img->at<float>(y, x) << endl;
+    }
 }
 
 Viewer::Viewer(System* pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Tracking *pTracking, Densify *pDensify, const string &strSettingPath):
     mpSystem(pSystem), mpFrameDrawer(pFrameDrawer),mpMapDrawer(pMapDrawer), mpTracker(pTracking), mDensify(pDensify),
-    mbFinishRequested(false), mbFinished(true), mbStopped(true), mbStopRequested(false)
+    mbFinishRequested(false), mbFinished(true), mbStopped(true), mbStopRequested(false), setAutoExposure(NULL), setManualExposure(NULL)
 {
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
 
@@ -81,8 +85,10 @@ void Viewer::Run()
     pangolin::Var<bool> menuShowGraph("menu.Show Graph",true,true);
     pangolin::Var<bool> menuShowDenseCloud("menu.Show Dense Cloud",false,true);
     pangolin::Var<bool> menuLocalizationMode("menu.Localization Mode",false,true);
+    pangolin::Var<bool> menuAutoExposure("menu.Auto exposure",true,true);
+    pangolin::Var<int> menuExposure("menu.Manual exposure",1000, 0, 20000);
     pangolin::Var<bool> menuReset("menu.Reset",false,false);
-    pangolin::Var<bool> menuFreeze("menu.Freeze",false,false);
+    // pangolin::Var<bool> menuFreeze("menu.Freeze",false,false);
 
     // Define Camera Render Object (for view / scene browsing)
     pangolin::OpenGlRenderState s_cam(
@@ -105,6 +111,8 @@ void Viewer::Run()
 
     bool bFollow = true;
     bool bLocalizationMode = false;
+    bool autoExposure = true;
+    int exposure = 0;
 
     while(1)
     {
@@ -146,12 +154,26 @@ void Viewer::Run()
             mpMapDrawer->DrawMapPoints();
         if(menuShowDenseCloud)
             mpMapDrawer->DrawDensePoints();
+        if (menuAutoExposure && !autoExposure) {
+            autoExposure = true;
+            exposure = 0;
+            if (setAutoExposure)
+                (*setAutoExposure)();
+        }
+        else if (!menuAutoExposure && menuExposure != exposure) {
+            exposure = menuExposure;
+            autoExposure = false;
+            cout << "Change exposure to " << exposure << endl;
+            if (setManualExposure)
+                (*setManualExposure)(exposure);
+        }
+
 
         pangolin::FinishFrame();
 
         cv::Mat im = mpFrameDrawer->DrawFrame();
         cv::imshow("ORB-SLAM2: Current Frame",im);
-        depth = mDensify->getDepthImage();
+        depth = mDensify->getDepthImage().clone();
         if (depth.size[0] > 0 && depth.size[1] > 0)
             cv::imshow("ORB-SLAM2: Depth Image", depth);
         cv::waitKey(mT);
@@ -245,6 +267,16 @@ void Viewer::Release()
 {
     unique_lock<mutex> lock(mMutexStop);
     mbStopped = false;
+}
+
+void Viewer::setAutoExposureCallback(fn_setAutoExposure callback)
+{
+    setAutoExposure = callback;
+}
+
+void Viewer::setManualExposureCallback(fn_setManualExposure callback)
+{
+    setManualExposure = callback;
 }
 
 }

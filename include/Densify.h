@@ -84,6 +84,7 @@ protected:
     std::mutex mMutexFinish;
 
     void GenerateDenseCloud(Mat Q, const Mat &image);
+    PointXYZI *findMatch(PointXYZI &point, float depth);
 
     bool mbFinishRequested;
 
@@ -97,6 +98,7 @@ protected:
 
 
     PointCloud<PointXYZI> denseCloud;
+    vector<int> mDenseMatches;
     std::mutex mDenseLock;
 
     std::mutex mLock;

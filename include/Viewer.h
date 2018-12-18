@@ -38,6 +38,9 @@ class FrameDrawer;
 class MapDrawer;
 class System;
 
+typedef void (*fn_setAutoExposure)();
+typedef void (*fn_setManualExposure)(int exposure);
+
 class Viewer
 {
 public:
@@ -56,6 +59,10 @@ public:
     bool isStopped();
 
     void Release();
+
+    void setAutoExposureCallback(fn_setAutoExposure callback);
+
+    void setManualExposureCallback(fn_setManualExposure callback);
 
 private:
 
@@ -82,6 +89,9 @@ private:
     bool mbStopped;
     bool mbStopRequested;
     std::mutex mMutexStop;
+
+    fn_setAutoExposure setAutoExposure;
+    fn_setManualExposure setManualExposure;
 
 };
 

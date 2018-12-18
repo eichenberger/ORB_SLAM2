@@ -18,13 +18,13 @@ Camera.p2: 0.0
 Camera.width: 752
 Camera.height: 480
 
-# Camera frames per second 
-Camera.fps: 10.0
+# Camera fra5mes per second 
+Camera.fps: 5.0
 
 # stereo baseline times fx (in mm)
 #Camera.bf: 3242.2
 #Camera.bf: 258.0
-Camera.bf: 451.932
+Camera.bf: 45.1932
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
@@ -119,16 +119,16 @@ RIGHT.P: !!opencv-matrix
 #--------------------------------------------------------------------------------------------
 # Viewer Parameters
 #--------------------------------------------------------------------------------------------
-Viewer.KeyFrameSize: 0.15
+Viewer.KeyFrameSize: 0.5
 Viewer.KeyFrameLineWidth: 1
 Viewer.GraphLineWidth: 1
-Viewer.PointSize: 5
-Viewer.CameraSize: 0.2
+Viewer.PointSize: 3
+Viewer.CameraSize: 0.1
 Viewer.CameraLineWidth: 2
 Viewer.ViewpointX: 0
-Viewer.ViewpointY: -100
+Viewer.ViewpointY: -20
 Viewer.ViewpointZ: -0.1
-Viewer.ViewpointF: 2000
+Viewer.ViewpointF: 1000
 
 stereosgbm.cn: 1
 stereosgbm.preFilterCap: 61

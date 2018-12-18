@@ -50,21 +50,23 @@ void Depth::calculateDepth(const Mat &imLeft, const Mat &imRight)
     left_matcher->compute(imLeft, imRight, disparityL);
     right_matcher->compute(imRight, imLeft, disparityR);
 
-    // TODO: replace 10.0 with dynamic value
     wls_filter->filter(disparityL, imLeft, disparityFiltered, disparityR);
     Mat confidence = wls_filter->getConfidenceMap();
 
     Mat filter;
 
-    threshold(confidence, filter, 192, 1, THRESH_BINARY);
+    // threshold(confidence, filter, 100, 1.0, THRESH_BINARY);
 
 
     Mat disparityFractional;
-    disparityFiltered.convertTo(disparityFractional, CV_32F, 1.0/15.0);
+    // Somehow baseline is of by x10, therefore divide depth by 10
+    disparityFiltered.convertTo(disparityFractional, CV_32F, 1.0/10.0);
+    //disparityFiltered.convertTo(disparityFractional, CV_32F, 1.0);
 
     mDepth = m_baseline/disparityFractional;
 
-    mDepth = mDepth.mul(filter, 1.0);
+    // Remove uncertinty
+    // mDepth = mDepth.mul(filter, 1.0);
 }
 
 const Mat& Depth::getDepthImage()
