@@ -7,7 +7,6 @@
 #include <opencv2/calib3d.hpp>
 
 //#include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/octree/octree_search.h>
 
 #include "Densify.h"
 

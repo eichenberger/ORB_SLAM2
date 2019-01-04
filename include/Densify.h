@@ -28,17 +28,12 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/filters/voxel_grid.h>
 #include "KeyFrame.h"
 #include "Depth.h"
 #include "Map.h"
 
 using namespace std;
 using namespace cv;
-using namespace pcl;
-
 
 namespace ORB_SLAM2
 {
@@ -59,6 +54,17 @@ public:
     long unsigned int id;
     bool verified;
 };
+
+class PointXYZI
+{
+public:
+    float x;
+    float y;
+    float z;
+    float intensity;
+};
+
+#define PointCloud vector
 
 class Densify
 {
@@ -84,7 +90,6 @@ protected:
     std::mutex mMutexFinish;
 
     void GenerateDenseCloud(Mat Q, const Mat &image);
-    PointXYZI *findMatch(PointXYZI &point, float depth);
 
     bool mbFinishRequested;
 
