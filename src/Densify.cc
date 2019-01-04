@@ -6,7 +6,8 @@
 #include <opencv2/core/ocl.hpp>
 #include <opencv2/calib3d.hpp>
 
-#include <pcl/kdtree/kdtree_flann.h>
+//#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/octree/octree_search.h>
 
 #include "Densify.h"
 
@@ -95,20 +96,23 @@ void Densify::GenerateDenseCloud(Mat Q, const Mat &image)
     Mat cloud;
     Mat depth = mDepth->getDepthImage();
     Mat QInv = Q.inv();
+#if 0
     bool validKdtree = false;
 
-    pcl::KdTreeFLANN<PointXYZI> kdtree;
+    float resolution = 0.01;
+    pcl::octree::OctreePointCloudSearch<PointXYZI> octree(resolution);
     if (denseCloud.size() > 0) {
-        kdtree.setInputCloud(denseCloud.makeShared());
+        octree.setInputCloud(denseCloud.makeShared());
+        octree.addPointsFromInputCloud();
         validKdtree = true;
     }
+#endif
 
     for (int x = 0; x < depth.cols; x++) {
         for (int y = 0; y < depth.rows; y++) {
             float currentDepth = depth.at<float>(y, x);
             if ( currentDepth > 0) {
                 Mat pos(4, 1, CV_32F);
-                // TODO: x, y are dependend on baseline
                 pos.at<float>(0,0) = (x-cx)/fx*currentDepth;
                 pos.at<float>(1,0) = (y-cy)/fy*currentDepth;
                 pos.at<float>(2,0) = currentDepth;
@@ -123,6 +127,7 @@ void Densify::GenerateDenseCloud(Mat Q, const Mat &image)
                 point.y = pos.at<float>(1,0);
                 point.z = pos.at<float>(2,0);
 
+#if 0
                 std::vector<int> index(1);
                 std::vector<float> sqdist(1);
 
@@ -130,9 +135,9 @@ void Densify::GenerateDenseCloud(Mat Q, const Mat &image)
                 int *matches = NULL;
                 if (validKdtree) {
                     // Growing radius with depth²
-                    kdtree.nearestKSearch(point, 1, index, sqdist);
+                    octree.nearestKSearch(point, 1, index, sqdist);
 
-                    float rad_z = currentDepth*0.02;
+                    float rad_z = currentDepth*0.1;
                     if (abs(sqdist[0]) < rad_z) {
                         // Growing radius with depth
                         float rad_x = currentDepth*0.01;
@@ -171,19 +176,17 @@ void Densify::GenerateDenseCloud(Mat Q, const Mat &image)
                     thePoint->intensity /= *matches;
                 }
                 else {
+#endif
                     point.intensity = (float)image.at<uint8_t>(y, x)/255.0;
 
                     denseCloud.push_back(point);
+#if 0
                     mDenseMatches.push_back(1);
                 }
-        }
+#endif
+            }
         }
     }
-
-//    VoxelGrid<PointXYZI> spareFilter;
-//    spareFilter.setInputCloud(denseCloud.makeShared());
-//    spareFilter.setLeafSize (0.2f, 0.2f, 0.2f);
-//    spareFilter.filter(denseCloud);
 }
 
 void Densify::InsertKeyFrame(KeyFrame *kf, const Mat *imLeft, const Mat *imRight)
@@ -196,8 +199,6 @@ void Densify::InsertKeyFrame(KeyFrame *kf, const Mat *imLeft, const Mat *imRight
                 kf->GetPoseInverse().clone(),
                 kf->mnFrameId,
                 false));
-    cout << "rows left " << stereoImages.back().imLeft.rows << endl;
-    cout << "rows right " << stereoImages.back().imRight.rows << endl;
 }
 
 void Densify::RemoveKeyFrame(long unsigned int id)

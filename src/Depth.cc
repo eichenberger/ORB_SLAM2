@@ -14,7 +14,8 @@ Depth::Depth(const cv::FileStorage &fsSettings)
 
     float cn = fsSettings["stereosgbm.cn"];
     float sgbm_preFilterCap = fsSettings["stereosgbm.preFilterCap"];
-    float sgbm_SADWindowSize = fsSettings["stereosgbm.SADWindowSize"];
+    float sgbm_windowSize = fsSettings["stereosgbm.windowSize"];
+    float sgbm_blockSize = fsSettings["stereosgbm.blockSize"];
     float sgbm_minDisparity = fsSettings["stereosgbm.minDisparity"];
     float sgbm_speckleRange = fsSettings["stereosgbm.speckleRange"];
     float sgbm_disp12MaxDiff = fsSettings["stereosgbm.disp12MaxDiff"];
@@ -25,9 +26,9 @@ Depth::Depth(const cv::FileStorage &fsSettings)
     m_baseline = fsSettings["Camera.bf"];
 
     left_matcher->setPreFilterCap(sgbm_preFilterCap);
-    left_matcher->setBlockSize (sgbm_SADWindowSize > 0 ? sgbm_SADWindowSize : 3);
-    left_matcher->setP1(8 * cn * sgbm_SADWindowSize * sgbm_SADWindowSize);
-    left_matcher->setP2(32 * cn * sgbm_SADWindowSize * sgbm_SADWindowSize);
+    left_matcher->setBlockSize (sgbm_blockSize);
+    left_matcher->setP1(8 * cn * sgbm_windowSize * sgbm_windowSize);
+    left_matcher->setP2(32 * cn * sgbm_windowSize * sgbm_windowSize);
     left_matcher->setNumDisparities(sgbm_numberOfDisparities);
     left_matcher->setMinDisparity(sgbm_minDisparity);
     left_matcher->setUniquenessRatio(sgbm_uniquenessRatio);
@@ -55,12 +56,10 @@ void Depth::calculateDepth(const Mat &imLeft, const Mat &imRight)
 
     Mat filter;
 
-    // threshold(confidence, filter, 100, 1.0, THRESH_BINARY);
-
 
     Mat disparityFractional;
     // Somehow baseline is of by x10, therefore divide depth by 10
-    disparityFiltered.convertTo(disparityFractional, CV_32F, 1.0/10.0);
+    disparityFiltered.convertTo(disparityFractional, CV_32F, 1.0/16.0);
     //disparityFiltered.convertTo(disparityFractional, CV_32F, 1.0);
 
     mDepth = m_baseline/disparityFractional;
