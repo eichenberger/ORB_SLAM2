@@ -59,6 +59,7 @@ src/LocalMapping.cc
 src/LoopClosing.cc
 src/ORBextractor.cc
 src/ORBextractorOCV.cc
+src/ORBextractorOCVOCL.cc
 src/ORBmatcher.cc
 src/FrameDrawer.cc
 src/Converter.cc

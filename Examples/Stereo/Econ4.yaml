@@ -53,6 +53,8 @@ ORBextractor.nLevels: 6
 ORBextractor.iniThFAST: 7 
 ORBextractor.minThFAST: 5
 
+ORBextractor.orbextractor: 2
+
 LEFT.height: 480
 LEFT.width: 752
 LEFT.D: !!opencv-matrix
@@ -116,12 +118,12 @@ stereosgbm.cn: 3
 stereosgbm.preFilterCap: 61
 stereosgbm.windowSize: 3
 stereosgbm.blockSize: 16
-stereosgbm.minDisparity: 16
+stereosgbm.minDisparity: 2
 stereosgbm.speckleRange: 32
 stereosgbm.disp12MaxDiff: 1
 stereosgbm.uniquenessRatio: 10
 stereosgbm.speckleWindowSize: 100
-stereosgbm.numberOfDisparities: 96 #112-16
+stereosgbm.numberOfDisparities: 112
 
 cpu.system: 5
 cpu.stereoleft: 5

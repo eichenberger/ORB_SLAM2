@@ -30,6 +30,8 @@
 #include"Map.h"
 #include"Initializer.h"
 #include"ORBextractor.h"
+#include"ORBextractorOCV.h"
+#include"ORBextractorOCVOCL.h"
 
 #include"Optimizer.h"
 #include"PnPsolver.h"
@@ -112,19 +114,44 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
 
     // Load ORB parameters
 
+    int orbextractor = fSettings["ORBextractor.orbextractor"];
     int nFeatures = fSettings["ORBextractor.nFeatures"];
     float fScaleFactor = fSettings["ORBextractor.scaleFactor"];
     int nLevels = fSettings["ORBextractor.nLevels"];
     int fIniThFAST = fSettings["ORBextractor.iniThFAST"];
     int fMinThFAST = fSettings["ORBextractor.minThFAST"];
 
-    mpORBextractorLeft = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+    if (sensor==System::STEREO) {
+        switch (orbextractor) {
+            case 0:
+                mpORBextractorLeft = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+                mpORBextractorRight = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+                cout << "Use ORB from ORB SLAM" << endl;
+                break;
+            case 1:
+                mpORBextractorLeft = new ORBextractorOCV(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+                mpORBextractorRight = new ORBextractorOCV(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+                cout << "Use ORB from OpenCV" << endl;
+                break;
+            case 2:
+                mpORBextractorLeft = new ORBextractorOCVOCL(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+                mpORBextractorRight = new ORBextractorOCVOCL(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+                cout << "Use ORB from OpenCV with OpenCL" << endl;
+                break;
+            default:
+                cout << "Unknown orbextractor type" << endl;
 
-    if(sensor==System::STEREO)
-        mpORBextractorRight = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+        }
+    }
+    else {
+        mpORBextractorLeft = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
 
-    if(sensor==System::MONOCULAR)
-        mpIniORBextractor = new ORBextractor(2*nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+        if(sensor==System::STEREO)
+            mpORBextractorRight = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+
+        if(sensor==System::MONOCULAR)
+            mpIniORBextractor = new ORBextractor(2*nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+    }
 
     cout << endl  << "ORB Extractor Parameters: " << endl;
     cout << "- Number of Features: " << nFeatures << endl;
