@@ -105,9 +105,11 @@ void Viewer::Run()
     Twc.SetIdentity();
 
     cv::namedWindow("ORB-SLAM2: Current Frame");
-    cv::namedWindow("ORB-SLAM2: Depth Image");
     cv::Mat depth;
-    cv::setMouseCallback("ORB-SLAM2: Depth Image", mouseHandler, &depth);
+    if (mDensify->enabled) {
+        cv::namedWindow("ORB-SLAM2: Depth Image");
+        cv::setMouseCallback("ORB-SLAM2: Depth Image", mouseHandler, &depth);
+    }
 
     bool bFollow = true;
     bool bLocalizationMode = false;
@@ -173,9 +175,11 @@ void Viewer::Run()
 
         cv::Mat im = mpFrameDrawer->DrawFrame();
         cv::imshow("ORB-SLAM2: Current Frame",im);
-        depth = mDensify->getDepthImage().clone();
-        if (depth.size[0] > 0 && depth.size[1] > 0)
-            cv::imshow("ORB-SLAM2: Depth Image", depth);
+        if (mDensify->enabled) {
+            depth = mDensify->getDepthImage().clone();
+            if (depth.size[0] > 0 && depth.size[1] > 0)
+                cv::imshow("ORB-SLAM2: Depth Image", depth);
+        }
         cv::waitKey(mT);
 
         if(menuReset)

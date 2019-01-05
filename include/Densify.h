@@ -84,6 +84,8 @@ public:
 
     void Reset();
 
+    int enabled;
+
 protected:
     bool CheckFinish();
     bool mbFinished;
@@ -97,6 +99,7 @@ protected:
     float fy;
     float cx;
     float cy;
+
 
     Ptr<Depth> mDepth;
     std::mutex mDepthLock;

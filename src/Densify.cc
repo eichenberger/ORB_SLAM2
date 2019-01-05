@@ -23,6 +23,7 @@ Densify::Densify(const string &strSettingPath):
     fy = fsSettings["Camera.fx"];
     cx = fsSettings["Camera.cx"];
     cy = fsSettings["Camera.cy"];
+    enabled = fsSettings["Densify.enabled"];
 
     mDepth = makePtr<Depth>(fsSettings);
 }
@@ -33,6 +34,12 @@ void Densify::Run()
     mbFinished = false;
     while(1) {
         Mat imLeft, imRight, Q;
+
+
+        if (!enabled) {
+            usleep(SLEEP_TIME*10);
+            continue;
+        }
 
         usleep(SLEEP_TIME);
         if (stereoImages.size() <= 0) {
@@ -190,6 +197,8 @@ void Densify::GenerateDenseCloud(Mat Q, const Mat &image)
 
 void Densify::InsertKeyFrame(KeyFrame *kf, const Mat *imLeft, const Mat *imRight)
 {
+    if (!enabled)
+        return;
     unique_lock<mutex> lock(mLock);
     if (imLeft->rows == 0 || imRight->rows == 0)
         cout << "WTF0" << endl;
@@ -202,6 +211,8 @@ void Densify::InsertKeyFrame(KeyFrame *kf, const Mat *imLeft, const Mat *imRight
 
 void Densify::RemoveKeyFrame(long unsigned int id)
 {
+    if (!enabled)
+        return;
     unique_lock<mutex> lock(mLock);
     printf("Remove frame %d\n", id);
     for (auto it = stereoImages.begin(); it != stereoImages.end(); it++) {
@@ -215,6 +226,8 @@ void Densify::RemoveKeyFrame(long unsigned int id)
 
 void Densify::SetVerified(long unsigned int id)
 {
+    if (!enabled)
+        return;
     unique_lock<mutex> lock(mLock);
     for (auto img = stereoImages.begin(); img != stereoImages.end(); img++) {
         if (img->id == id) {
