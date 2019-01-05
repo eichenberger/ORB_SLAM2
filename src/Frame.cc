@@ -22,6 +22,7 @@
 #include "Converter.h"
 #include "ORBmatcher.h"
 #include <thread>
+#include <common.h>
 
 namespace ORB_SLAM2
 {
@@ -31,6 +32,9 @@ bool Frame::mbInitialComputations=true;
 float Frame::cx, Frame::cy, Frame::fx, Frame::fy, Frame::invfx, Frame::invfy;
 float Frame::mnMinX, Frame::mnMinY, Frame::mnMaxX, Frame::mnMaxY;
 float Frame::mfGridElementWidthInv, Frame::mfGridElementHeightInv;
+
+int Frame::cpuThreadLeft = -1;
+int Frame::cpuThreadRight = -1;
 
 Frame::Frame()
 {}
@@ -77,6 +81,8 @@ Frame::Frame(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timeSt
     // ORB extraction
     thread threadLeft(&Frame::ExtractORB,this,0,imLeft);
     thread threadRight(&Frame::ExtractORB,this,1,imRight);
+    set_cpu(cpuThreadLeft, &threadLeft);
+    set_cpu(cpuThreadRight, &threadRight);
     threadLeft.join();
     threadRight.join();
 

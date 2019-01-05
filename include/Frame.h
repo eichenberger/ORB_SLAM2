@@ -118,6 +118,10 @@ public:
     static float invfy;
     cv::Mat mDistCoef;
 
+    static int cpuThreadLeft;
+    static int cpuThreadRight;
+
+
     // Stereo baseline multiplied by fx.
     float mbf;
 

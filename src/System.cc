@@ -26,6 +26,7 @@
 #include <pangolin/pangolin.h>
 #include <iomanip>
 #include <unistd.h>
+#include <common.h>
 
 namespace ORB_SLAM2
 {
@@ -58,6 +59,19 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
        exit(-1);
     }
 
+    int cpu_stereoleft = fsSettings["cpu.stereoleft"];
+    int cpu_stereoright = fsSettings["cpu.stereoright"];
+
+    Frame::cpuThreadLeft = cpu_stereoleft;
+    Frame::cpuThreadRight = cpu_stereoright;
+
+    int cpu_loopclosing = fsSettings["cpu.loopclosing"];
+    int cpu_localmapping = fsSettings["cpu.localmapping"];
+    int cpu_densify = fsSettings["cpu.densify"];
+    int cpu_viewer = fsSettings["cpu.viewer"];
+    int cpu_system = fsSettings["cpu.system"];
+
+    set_cpu_current(cpu_system);
 
     //Load ORB Vocabulary
     cout << endl << "Loading ORB Vocabulary. This could take a while..." << endl;
@@ -84,6 +98,8 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mDensify = new Densify(strSettingsFile);
     mtDensify = new thread(&ORB_SLAM2::Densify::Run, mDensify);
 
+    set_cpu(cpu_densify, mtDensify);
+
     mpMapDrawer = new MapDrawer(mpMap, mDensify, strSettingsFile);
 
     //Initialize the Tracking thread
@@ -96,15 +112,20 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpLocalMapper = new LocalMapping(mpMap, mSensor==MONOCULAR, mDensify);
     mptLocalMapping = new thread(&ORB_SLAM2::LocalMapping::Run,mpLocalMapper);
 
+    set_cpu(cpu_localmapping, mptLocalMapping);
+
     //Initialize the Loop Closing thread and launch
     mpLoopCloser = new LoopClosing(mpMap, mpKeyFrameDatabase, mpVocabulary, mSensor!=MONOCULAR);
     mptLoopClosing = new thread(&ORB_SLAM2::LoopClosing::Run, mpLoopCloser);
+
+    set_cpu(cpu_loopclosing, mptLocalMapping);
 
     //Initialize the Viewer thread and launch
     if(bUseViewer)
     {
         mpViewer = new Viewer(this, mpFrameDrawer,mpMapDrawer,mpTracker, mDensify, strSettingsFile);
         mptViewer = new thread(&Viewer::Run, mpViewer);
+        set_cpu(cpu_viewer, mptViewer);
         mpTracker->SetViewer(mpViewer);
     }
 
