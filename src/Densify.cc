@@ -25,6 +25,11 @@ Densify::Densify(const string &strSettingPath):
     cy = fsSettings["Camera.cy"];
     enabled = fsSettings["Densify.enabled"];
 
+    topmargin = fsSettings["Densify.topmargin"];
+    bottommargin = fsSettings["Densify.bottommargin"];
+    leftmargin = fsSettings["Densify.leftmargin"];
+    rightmargin = fsSettings["Densify.rightmargin"];
+
     mDepth = makePtr<Depth>(fsSettings);
 }
 
@@ -114,8 +119,8 @@ void Densify::GenerateDenseCloud(Mat Q, const Mat &image)
     }
 #endif
 
-    for (int x = 0; x < depth.cols; x++) {
-        for (int y = 0; y < depth.rows; y++) {
+    for (int x = leftmargin; x < depth.cols - rightmargin; x++) {
+        for (int y = topmargin; y < depth.rows - bottommargin; y++) {
             float currentDepth = depth.at<float>(y, x);
             if ( currentDepth > 0) {
                 Mat pos(4, 1, CV_32F);

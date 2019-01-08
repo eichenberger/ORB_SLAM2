@@ -114,3 +114,25 @@ Viewer.ViewpointY: -0.7
 Viewer.ViewpointZ: -1.8
 Viewer.ViewpointF: 500
 
+stereosgbm.cn: 3
+stereosgbm.preFilterCap: 61
+stereosgbm.windowSize: 3
+stereosgbm.blockSize: 16
+stereosgbm.minDisparity: 2
+stereosgbm.speckleRange: 32
+stereosgbm.disp12MaxDiff: 1
+stereosgbm.uniquenessRatio: 10
+stereosgbm.speckleWindowSize: 100
+stereosgbm.numberOfDisparities: 112
+
+cpu.system: 5
+cpu.stereoleft: 5
+cpu.stereoright: 4
+cpu.loopclosing: 4
+cpu.localmapping: 3
+cpu.loopcloseing: 2
+cpu.densify: 1
+cpu.viewer: 0
+
+Densify.enabled: 0
+ORBextractor.orbextractor: 0

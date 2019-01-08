@@ -5,30 +5,32 @@
 #--------------------------------------------------------------------------------------------
 
 # Camera calibration and distortion parameters (OpenCV) 
-Camera.fx: 721.5377
-Camera.fy: 721.5377
-Camera.cx: 609.5593
-Camera.cy: 172.854
+Camera.fx: 754
+Camera.fy: 751
+Camera.cx: 387
+Camera.cy: 223
 
-Camera.k1: 0.0
+Camera.k1: 0.1
 Camera.k2: 0.0
-Camera.p1: 0.0
+Camera.p1: -0.015
 Camera.p2: 0.0
 
-Camera.width: 1241
-Camera.height: 376
+Camera.width: 752
+Camera.height: 480
 
 # Camera frames per second 
-Camera.fps: 10.0
+Camera.fps: 30.0
 
-# stereo baseline times fx
-Camera.bf: 387.5744
+# stereo baseline times fx (in mm)
+#Camera.bf: 3242.2
+#Camera.bf: 258.0
+Camera.bf: 45.1932
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
 
 # Close/Far threshold. Baseline times.
-ThDepth: 40
+ThDepth: 50.0
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
@@ -64,14 +66,14 @@ Viewer.ViewpointY: -100
 Viewer.ViewpointZ: -0.1
 Viewer.ViewpointF: 2000
 
-cpu.system: 5
-cpu.stereoleft: 5
-cpu.stereoright: 4
-cpu.loopclosing: 4
-cpu.localmapping: 3
-cpu.loopcloseing: 2
-cpu.densify: 1
-cpu.viewer: 0
+stereobm.blockSize: 21
+stereobm.numDisparities: 64
+stereobm.preFilterSize: 19
+stereobm.preFilterCap: 16
+stereobm.minDisparity: 0
+stereobm.textureThreshold: 5
+stereobm.uniquenessRatio: 1
+stereobm.speckleWindowSize: 350
+stereobm.speckleRange: 31
+stereobm.disp12MaxDiff: 1
 
-Densify.enabled: 0
-ORBextractor.orbextractor: 0

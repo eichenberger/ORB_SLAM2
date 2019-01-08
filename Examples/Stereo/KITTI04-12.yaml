@@ -35,7 +35,7 @@ ThDepth: 40
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 2000
+ORBextractor.nFeatures: 800
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
 ORBextractor.scaleFactor: 1.2
@@ -64,3 +64,30 @@ Viewer.ViewpointY: -100
 Viewer.ViewpointZ: -0.1
 Viewer.ViewpointF: 2000
 
+#cpu.system: 0
+#cpu.stereoleft: 0
+#cpu.stereoright: 1
+#cpu.localmapping: 2
+#cpu.loopclosing: 2
+#cpu.densify: 3
+#cpu.viewer: 3
+
+# iMX8
+#cpu.system: 5
+#cpu.stereoleft: 5
+#cpu.stereoright: 4
+#cpu.loopclosing: 3
+#cpu.localmapping: 2
+#cpu.densify: 1
+#cpu.viewer: 0
+
+cpu.system: -1
+cpu.stereoleft: -1
+cpu.stereoright: -1
+cpu.localmapping: -1
+cpu.loopclosing: -1
+cpu.densify: -1
+cpu.viewer: -1
+
+Densify.enabled: 0
+ORBextractor.orbextractor: 1

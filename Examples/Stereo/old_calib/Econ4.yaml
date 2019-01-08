@@ -53,8 +53,6 @@ ORBextractor.nLevels: 6
 ORBextractor.iniThFAST: 7 
 ORBextractor.minThFAST: 5
 
-ORBextractor.orbextractor: 0
-
 LEFT.height: 480
 LEFT.width: 752
 LEFT.D: !!opencv-matrix
@@ -135,3 +133,4 @@ cpu.densify: 0
 cpu.viewer: 0
 
 Densify.enabled: 1
+ORBextractor.orbextractor: 0

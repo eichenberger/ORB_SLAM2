@@ -53,6 +53,7 @@ protected:
     Ptr<StereoMatcher> right_matcher;
     Ptr<ximgproc::DisparityWLSFilter> wls_filter;
     Mat mDepth;
+
 };
 
 } //namespace ORB_SLAM

@@ -37,14 +37,9 @@ void ORBextractorOCV::operator()( cv::InputArray image, cv::InputArray mask,
     /* Unfortunately libpciaccess is not multithreading capable therefore
      * we need to lock access to Intel Graphic cards.
      * However, this works with vivante */
-    gpulock.lock();
-
     mvImagePyramid.clear();
     orb->detectAndComputeWithPyramid(image, mask, keypoints, descriptors, &mvImagePyramid);
     Size s = descriptors.size();
-
-    gpulock.unlock();
-
 #else
     UMat uImage, uDescriptors;
 

@@ -100,10 +100,13 @@ protected:
     float cx;
     float cy;
 
+    int topmargin;
+    int bottommargin;
+    int leftmargin;
+    int rightmargin;
 
     Ptr<Depth> mDepth;
     std::mutex mDepthLock;
-
 
     PointCloud<PointXYZI> denseCloud;
     vector<int> mDenseMatches;
